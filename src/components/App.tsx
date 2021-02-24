@@ -1,9 +1,12 @@
-import React from 'react';
+import React from 'react'
+import Timetable from './common/Timetable'
 
 function App() {
   return (
-    <h1>Hello React!</h1>
-  );
+    <>
+      <Timetable/>
+    </>
+  )
 }
 
-export default App;
+export default App
