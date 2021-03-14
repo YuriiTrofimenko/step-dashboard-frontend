@@ -1,9 +1,29 @@
 import GroupModel from "./GroupModel";
+import HeaderCardModel from "./HeaderCardModel";
 import LecturerModel from "./LecturerModel";
 import LessonCardModel from "./LessonCardModel";
 import TimeIntervalModel from "./TimeIntervalModel";
 
 export default class FakeAPI {
+  public static headerCardList: HeaderCardModel[] = [
+    new HeaderCardModel('201'),
+    new HeaderCardModel('202'),
+    new HeaderCardModel('204'),
+    new HeaderCardModel('205'),
+    new HeaderCardModel('206'),
+    new HeaderCardModel('207'),
+    new HeaderCardModel('208'),
+    new HeaderCardModel('210'),
+    new HeaderCardModel('211'),
+    new HeaderCardModel('212'),
+    new HeaderCardModel('213'),
+    new HeaderCardModel('214'),
+    new HeaderCardModel('215'),
+    new HeaderCardModel('217'),
+    new HeaderCardModel('217a'),
+    new HeaderCardModel('218'),
+    new HeaderCardModel('218a')
+  ]
   public static groupList: GroupModel[] = [
     new GroupModel('ПД 911', 1),
     new GroupModel('1013', 2),
@@ -22,6 +42,26 @@ export default class FakeAPI {
   ]
   public static timeIntervalList: TimeIntervalModel[] = [
     new TimeIntervalModel(
+      '9:00',
+      '10:20',
+      []
+    ),
+    new TimeIntervalModel(
+      '10:30',
+      '11:50',
+      []
+    ),
+    new TimeIntervalModel(
+      '12:00',
+      '13:20',
+      []
+    ),
+    new TimeIntervalModel(
+      '13:30',
+      '14:50',
+      []
+    ),
+    new TimeIntervalModel(
       '15:00',
       '16:20',
       [
@@ -38,6 +78,21 @@ export default class FakeAPI {
         new LessonCardModel('211', 5, 5),
         new LessonCardModel('212', 6, 6)
       ]
+    ),
+    new TimeIntervalModel(
+      '18:00',
+      '19:20',
+      []
+    ),
+    new TimeIntervalModel(
+      '19:30',
+      '20:50',
+      []
+    ),
+    new TimeIntervalModel(
+      '21:00',
+      '22:20',
+      []
     )
   ]
 }

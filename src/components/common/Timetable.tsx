@@ -5,7 +5,8 @@ import { HeaderCardStore } from '../../stores/HeaderCardStore'
 import { TimeIntervalStore } from '../../stores/TimeIntervalStore'
 import { GroupStore } from '../../stores/GroupStore'
 import { LecturerStore } from '../../stores/LecturerStore'
-import { Grid, Card, CardContent, Typography, IconButton, CardActions, Button, Box, Dialog, DialogTitle, DialogActions, DialogContent, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core'
+import { Grid, Card, CardContent, Typography, /* IconButton, CardActions, */ Button, Box, Dialog, DialogTitle, DialogActions, DialogContent, FormControl, InputLabel, MenuItem, Select/*, TextField */ } from '@material-ui/core'
+import DigitalWatch from './timetable_parts/DigitalWatch'
 // import { ValidatorForm } from 'react-material-ui-form-validator'
 
 // type for the explicitly provided props only
@@ -26,9 +27,11 @@ interface IState {
 const styles = (theme: Theme) => createStyles({
   root: {
     '& .MuiCard-root': {
-      /* fontSize: 11, */
-      /* width: 95, */
-      height: 100
+      height: 90
+    },
+    '& .MuiGrid-item': {
+      paddingBottom: 1,
+      paddingTop: 1
     }
   },
   cardsCell: {
@@ -62,6 +65,10 @@ const styles = (theme: Theme) => createStyles({
       }
     }
   },
+  headerCard: {
+    height: '50px !important',
+    textAlign: 'center'
+  },
   bullet: {
     display: 'inline-block',
     margin: '0 2px',
@@ -69,10 +76,7 @@ const styles = (theme: Theme) => createStyles({
   },
   title: {
     fontSize: 11,
-  },
-  pos: {
-    marginBottom: 12,
-  },
+  }
 })
 
 @inject('headerCardStore', 'timeIntervalStore', 'groupStore', 'lecturerStore')
@@ -131,10 +135,10 @@ class Timetable extends Component<IProps, IState> {
   render () {
     const { classes } = this.injected
     const { headerCardList } = this.injected.headerCardStore
+    // calculation of width for all the cards by the width of the screen 
     const cardWith =
       ((document.body.clientWidth - 143) / (headerCardList.length + 1)).toFixed(0)
     const cardStyle = {'width': cardWith + 'px'}
-    console.log('cardWith', (document.body.clientWidth - 143) / (headerCardList.length + 1))
     const {
       timeIntervalList,
       selectedLessonCard,
@@ -149,7 +153,7 @@ class Timetable extends Component<IProps, IState> {
         <Grid container spacing={3} className={classes.root}>
           <Grid item xs={12} className={classes.cardsCell}>
             <Box component='span'>
-              <Card className={classes.card} style={cardStyle}>
+              <Card className={classes.card && classes.headerCard} style={cardStyle}>
                 <CardContent>
                   <Typography variant="h6" component="h3">
                     &nbsp;&nbsp;&nbsp;
@@ -160,7 +164,7 @@ class Timetable extends Component<IProps, IState> {
             {
               headerCardList.map((headerCardModel, headerCardIdx) => (
                 <Box component='span' key={headerCardIdx}>
-                  <Card className={classes.card} style={cardStyle}>
+                  <Card className={classes.card && classes.headerCard} style={cardStyle}>
                     <CardContent>
                       <Typography variant="h6" component="h3">
                         {headerCardModel.audienceNumber}
@@ -199,7 +203,7 @@ class Timetable extends Component<IProps, IState> {
                         }}>
                         <CardContent>
                           <Typography variant="caption" display="block">
-                            {lessonCardModel.audienceNumber}
+                            {(lessonCardModel.groupId && lessonCardModel.lecturerId) ? lessonCardModel.audienceNumber : ''}
                           </Typography>
                           <Typography variant="body2" component="p">
                             {groupList.find(group => group.id === lessonCardModel.groupId)?.name}
@@ -291,6 +295,7 @@ class Timetable extends Component<IProps, IState> {
             </DialogActions>
           </form>
         </Dialog>
+        <DigitalWatch/>
       </>
     )
   }

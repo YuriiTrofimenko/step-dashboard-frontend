@@ -97,7 +97,6 @@ class TimeIntervalStore {
     this.selectedLessonCard.lecturerId = lessonCardLecturerId
   }
   @action saveLessonCard (): void {
-    console.log('this.selectedLessonCard', this.selectedLessonCard)
     if (this.selectedLessonCard?.id && this.selectedTimeIntervalId) {
       const fakeLesson =
         FakeAPI.timeIntervalList.find(t => t.id === this.selectedTimeIntervalId)

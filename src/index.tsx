@@ -2,6 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'mobx-react'
 import {ErrorBoundary, withErrorBoundary} from 'react-error-boundary'
+import routerStore from './stores/RouterStore'
+import commonStore from './stores/CommonStore'
+import userStore from './stores/UserStore'
 import headerCardStore from './stores/HeaderCardStore'
 import timeIntervalStore from './stores/TimeIntervalStore'
 import groupStore from './stores/GroupStore'
@@ -12,6 +15,9 @@ import reportWebVitals from './reportWebVitals'
 
 // in-memory local storage module list for injections
 const stores = {
+  routerStore,
+  commonStore,
+  userStore,
   headerCardStore,
   timeIntervalStore,
   groupStore,
@@ -23,7 +29,7 @@ ReactDOM.render(
     {/* providing of in-memory local storage modules */}
     <Provider {...stores}>
       <ErrorBoundary
-        FallbackComponent={App}
+        FallbackComponent={() => <App/>}
         onError={(error: Error, info: {componentStack: string}) => {
           console.log(error, info.componentStack)
         }}
