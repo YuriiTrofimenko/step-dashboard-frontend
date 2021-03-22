@@ -6,7 +6,9 @@ import { TimeIntervalStore } from '../../stores/TimeIntervalStore'
 import { GroupStore } from '../../stores/GroupStore'
 import { LecturerStore } from '../../stores/LecturerStore'
 import { Grid, Card, CardContent, Typography, /* IconButton, CardActions, */ Button, Box, Dialog, DialogTitle, DialogActions, DialogContent, FormControl, InputLabel, MenuItem, Select/*, TextField */ } from '@material-ui/core'
+import dateTimeFormatter from 'date-and-time'
 import DigitalWatch from './timetable_parts/DigitalWatch'
+import TimeIntervalModel from '../../models/TimeIntervalModel'
 // import { ValidatorForm } from 'react-material-ui-form-validator'
 
 // type for the explicitly provided props only
@@ -21,7 +23,8 @@ interface IInjectedProps extends WithStyles<typeof styles>, IProps {
 }
 
 interface IState {
-  lessonDialogOpen: boolean
+  lessonDialogOpen: boolean,
+  currentDate: Date
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -45,9 +48,6 @@ const styles = (theme: Theme) => createStyles({
       display: 'flex'
     }
   },
-  selectedCardsCell: {
-    backgroundColor: 'lightblue'
-  },
   card: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -56,7 +56,39 @@ const styles = (theme: Theme) => createStyles({
     textAlign: 'center',
     justifyContent: 'space-evenly'
   },
+  currentTimeIntervalCard: {
+    backgroundColor: '#0a95dd',
+    color: '#fff',
+    display: 'flex',
+    flexWrap: 'wrap',
+    boxSizing: 'border-box',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'space-evenly'
+  },
   lessonCard: {
+    textAlign: 'left',
+    '& > div': {
+      padding: '5px',
+      '& > span': {
+        margin: 0
+      }
+    }
+  },
+  currentTimeIntervalEmptyLessonCards: {
+    backgroundColor: 'lightblue',
+    opacity: 0.5,
+    textAlign: 'left',
+    '& > div': {
+      padding: '5px',
+      '& > span': {
+        margin: 0
+      }
+    }
+  },
+  currentTimeIntervalNonEmptyLessonCards: {
+    backgroundColor: '#0a95dd',
+    color: '#fff',
     textAlign: 'left',
     '& > div': {
       padding: '5px',
@@ -82,10 +114,13 @@ const styles = (theme: Theme) => createStyles({
 @inject('headerCardStore', 'timeIntervalStore', 'groupStore', 'lecturerStore')
 @observer
 class Timetable extends Component<IProps, IState> {
+  public intervalID: number
   constructor(props: IProps) {
     super(props)
+    this.intervalID = 0
     this.state = {
-      lessonDialogOpen: false
+      lessonDialogOpen: false,
+      currentDate: new Date()
     }
   }
   get injected() {
@@ -96,6 +131,34 @@ class Timetable extends Component<IProps, IState> {
     this.injected.timeIntervalStore.fetchTimeIntervalList()
     this.injected.groupStore.fetchGroupList()
     this.injected.lecturerStore.fetchLecturerList()
+    this.intervalID = window.setInterval(
+      () => {
+        const currentDate = new Date()
+        this.setState({currentDate})
+        this.injected.timeIntervalStore.setCurrentTimeIntervalId(
+          this.injected.timeIntervalStore.timeIntervalList.find(
+            (timeInterval) => {
+              const currentIntervalStartDate: Date =
+                dateTimeFormatter.parse(timeInterval.intervalStart, 'H:mm')
+              const currentIntervalEndDate: Date =
+                dateTimeFormatter.parse(timeInterval.intervalEnd, 'H:mm')
+              const currentTimeDate: Date =
+                dateTimeFormatter.parse(
+                  `${dateTimeFormatter.format(currentDate, 'H')}:${dateTimeFormatter.format(currentDate, 'mm')}`,
+                  'H:mm'
+                )
+                return (currentTimeDate >= currentIntervalStartDate) && (currentTimeDate <= currentIntervalEndDate)
+            }
+          )!.id || null)
+        /* dateTimeFormatter.parse(
+          `${}:${}:00`, 'H:mm:ss'
+        ) */
+      },
+      1000
+    )
+  }
+  componentWillUnmount() {
+    window.clearInterval(this.intervalID)
   }
   lessonCardClickHandler = (intervalRowId: number | null, lessonCardId: number | null) => {
     this.injected.timeIntervalStore.setSelectedLessonCard(intervalRowId, lessonCardId)
@@ -147,7 +210,6 @@ class Timetable extends Component<IProps, IState> {
     } = this.injected.timeIntervalStore
     const { groupList } = this.injected.groupStore
     const { lecturerList } = this.injected.lecturerStore
-    console.log('selectedLessonCard render', selectedLessonCard)
     return (
       <>
         <Grid container spacing={3} className={classes.root}>
@@ -180,7 +242,7 @@ class Timetable extends Component<IProps, IState> {
               <Grid item xs={12} className={classes.cardsCell} key={intervalIdx}>
                 <Box component='span'>
                   <Card
-                    className={classes.card && ((this.injected.timeIntervalStore.currentTimeIntervalId) ? classes.selectedCardsCell : '')}
+                    className={(this.injected.timeIntervalStore.currentTimeIntervalId === timeIntervalModel.id) ? classes.currentTimeIntervalCard : classes.card}
                     style={cardStyle}>
                     <CardContent>
                       <Typography variant="subtitle1">
@@ -196,7 +258,7 @@ class Timetable extends Component<IProps, IState> {
                   timeIntervalModel.lessonCards.map((lessonCardModel, lessonIdx) => (
                     <Box component='span' key={lessonIdx}>
                       <Card
-                        className={classes.card && classes.lessonCard}
+                        className={(this.injected.timeIntervalStore.currentTimeIntervalId === timeIntervalModel.id) ? (lessonCardModel.groupId && lessonCardModel.lecturerId) ? classes.currentTimeIntervalNonEmptyLessonCards : classes.currentTimeIntervalEmptyLessonCards : classes.lessonCard}
                         style={cardStyle}
                         onClick={() => {
                           this.lessonCardClickHandler(timeIntervalModel.id || null, lessonCardModel.id || null)

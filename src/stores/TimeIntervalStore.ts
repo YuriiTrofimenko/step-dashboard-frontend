@@ -11,7 +11,7 @@ class TimeIntervalStore {
   // top level properties 
   @observable timeIntervalList: TimeIntervalModel[] = []
   @observable selectedTimeInterval: TimeIntervalModel | null = null
-  @observable currentTimeIntervalId: number | null = 2
+  @observable currentTimeIntervalId: number | null = null
   @observable intervalStart: string | null = null
   @observable intervalEnd: string | null = null
   // lesson card properties
@@ -58,6 +58,9 @@ class TimeIntervalStore {
         )
     })
     this.timeIntervalList.unshift(...timeIntervalListStub)
+  }
+  @action setCurrentTimeIntervalId (id: number | null): void {
+    this.currentTimeIntervalId = id
   }
   @action setTimeIntervalStart (start: string): void {
     this.intervalStart = start
