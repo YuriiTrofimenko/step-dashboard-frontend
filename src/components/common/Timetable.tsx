@@ -191,11 +191,16 @@ class Timetable extends Component<IProps, IState> {
     this.setState({lessonDialogOpen: true})
   }
   lessonDialogClosedHandler = () => {
-    console.log('selectedLessonCard', this.injected.timeIntervalStore.selectedLessonCard)
+    // console.log('selectedLessonCard', this.injected.timeIntervalStore.selectedLessonCard)
     this.setState({lessonDialogOpen: false})
     this.injected.timeIntervalStore.unsetSelectedLessonCard()
   }
   lessonDialogCancelHandler = () => {
+    this.setState({lessonDialogOpen: false})
+    this.injected.timeIntervalStore.unsetSelectedLessonCard()
+  }
+  lessonDialogDeleteHandler = () => {
+    this.injected.timeIntervalStore.deleteLessonCard()
     this.setState({lessonDialogOpen: false})
     this.injected.timeIntervalStore.unsetSelectedLessonCard()
   }
@@ -357,6 +362,7 @@ class Timetable extends Component<IProps, IState> {
                     autoComplete="off"
                     style={{ opacity: 0, height: 0 }}
                     value={lessonCardGroupId?.toString()}
+                    onChange={()=>{}}
                     required={true}
                   />
                 </FormControl>
@@ -383,14 +389,18 @@ class Timetable extends Component<IProps, IState> {
                     autoComplete="off"
                     style={{ opacity: 0, height: 0 }}
                     value={lessonCardLecturerId?.toString()}
+                    onChange={()=>{}}
                     required={true}
                   />
                 </FormControl>
               {/* </ValidatorForm> */}
             </DialogContent>
             <DialogActions>
-              <Button onClick={this.lessonDialogCancelHandler} color="primary">
+              <Button onClick={this.lessonDialogCancelHandler}>
                 Отмена
+              </Button>
+              <Button onClick={this.lessonDialogDeleteHandler}>
+                Удалить
               </Button>
               <Button type='submit' color="primary">
                 {selectedLessonCard?.lecturerId ? 'Обновить' : 'Добавить'}

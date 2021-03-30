@@ -103,6 +103,18 @@ class TimeIntervalStore {
     this.lessonCardLecturerId = lessonCardLecturerId
     this.selectedLessonCard.lecturerId = lessonCardLecturerId
   }
+  @action deleteLessonCard (): void {
+    if (this.selectedLessonCard?.id && this.selectedTimeIntervalId) {
+      const fakeLesson =
+        FakeAPI.timeIntervalList.find(t => t.id === this.selectedTimeIntervalId)
+          ?.lessonCards.find(l => l.id === this.selectedLessonCard?.id)
+      if (fakeLesson) {
+        fakeLesson.groupId = null
+        fakeLesson.lecturerId = null
+        this.fetchTimeIntervalList()
+      }
+    }
+  }
   @action saveLessonCard (): void {
     if (this.selectedLessonCard?.id && this.selectedTimeIntervalId) {
       const fakeLesson =
