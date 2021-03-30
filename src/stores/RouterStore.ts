@@ -10,13 +10,12 @@ import userStore from "./UserStore"
 
 class RouterStore {
 
-  // routes for anonymous users
+  /* // routes for anonymous users
   private anonymousRoutes: Array<RouteModel> = [
       { uri: '/', name: 'Home', Component: Home },
       { uri: '/schedule', name: 'Schedule', Component: Schedule },
       { uri: '/about', name: 'About', Component: About },
-      { uri: '/signin', name: 'Sign in', Component: SignIn }/* ,
-      { path: '/signup', name: 'Register', Component: SignUp } */
+      { uri: '/signin', name: 'Sign in', Component: SignIn }
   ]
 
   // routes for logged users
@@ -26,6 +25,23 @@ class RouterStore {
     { uri: '/audiences', name: 'Audiences', Component: AudienceEditor },
     { uri: '/about', name: 'About', Component: About },
     { uri: '/auth:out', name: 'Sign out', Component: Home }
+  ] */
+
+  // routes for anonymous users
+  private anonymousRoutes: Array<RouteModel> = [
+    { uri: '/', name: 'Главная', Component: Home },
+    { uri: '/schedule', name: 'Расписание', Component: Schedule },
+    { uri: '/about', name: 'О программе', Component: About },
+    { uri: '/signin', name: 'Вход', Component: SignIn }
+  ]
+
+  // routes for logged users
+  private loggedRoutes: Array<RouteModel> = [
+    { uri: '/', name: 'Главная', Component: Home },
+    { uri: '/schedule', name: 'Расписание', Component: Schedule },
+    { uri: '/audiences', name: 'Аудитории', Component: AudienceEditor },
+    { uri: '/about', name: 'О программе', Component: About },
+    { uri: '/auth:out', name: 'Выйти', Component: Home }
   ]
 
   /* private adminRoutes: Array<RouteModel> = [

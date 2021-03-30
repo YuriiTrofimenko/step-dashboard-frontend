@@ -10,6 +10,7 @@ import dateTimeFormatter from 'date-and-time'
 import DigitalWatch from './timetable_parts/DigitalWatch'
 // import TimeIntervalModel from '../../models/TimeIntervalModel'
 import TimeIntervalProgress from './timetable_parts/TimeIntervalProgress'
+import LessonCardModel from '../../models/LessonCardModel'
 // import { ValidatorForm } from 'react-material-ui-form-validator'
 
 // type for the explicitly provided props only
@@ -25,7 +26,8 @@ interface IInjectedProps extends WithStyles<typeof styles>, IProps {
 
 interface IState {
   lessonDialogOpen: boolean,
-  currentDate: Date
+  currentDate: Date,
+  acquiredAudiences: string []
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -102,6 +104,17 @@ const styles = (theme: Theme) => createStyles({
     height: '50px !important',
     textAlign: 'center'
   },
+  acquridHeaderCard: {
+    height: '50px !important',
+    textAlign: 'center',
+    backgroundColor: '#0a95dd',
+    color: '#fff'
+  },
+  freeHeaderCard: {
+    height: '50px !important',
+    textAlign: 'center',
+    color: 'lightgray'
+  },
   bullet: {
     display: 'inline-block',
     margin: '0 2px',
@@ -121,7 +134,8 @@ class Timetable extends Component<IProps, IState> {
     this.intervalID = 0
     this.state = {
       lessonDialogOpen: false,
-      currentDate: new Date()
+      currentDate: new Date(),
+      acquiredAudiences: []
     }
   }
   get injected() {
@@ -151,9 +165,20 @@ class Timetable extends Component<IProps, IState> {
                 return (currentTimeDate >= currentIntervalStartDate) && (currentTimeDate <= currentIntervalEndDate)
             }
           )?.id || null)
-        /* dateTimeFormatter.parse(
-          `${}:${}:00`, 'H:mm:ss'
-        ) */
+        const currentTimeIntervalId = this.injected.timeIntervalStore.currentTimeIntervalId
+        if (currentTimeIntervalId) {
+          const currentTimeInterval =
+            this.injected.timeIntervalStore.timeIntervalList.find(timeInterval => timeInterval.id === currentTimeIntervalId)
+          if (currentTimeInterval) {
+            const acquiredAudiences: string[] = []
+            currentTimeInterval.lessonCards.forEach(lessonCard => {
+              if (lessonCard.audienceNumber && lessonCard.groupId && lessonCard.lecturerId) {
+                acquiredAudiences.push(lessonCard.audienceNumber)
+              }
+            })
+            this.setState({'acquiredAudiences': acquiredAudiences})
+          }
+        }
       },
       1000
     )
@@ -213,6 +238,19 @@ class Timetable extends Component<IProps, IState> {
     const { lecturerList } = this.injected.lecturerStore
     const timeIntervalProgressView =
       this.injected.timeIntervalStore.currentTimeIntervalId ? <TimeIntervalProgress/> : ''
+    const freeAudiences: Set<string> = new Set()
+    headerCardList.forEach(headerCard => freeAudiences.add(headerCard.audienceNumber))
+    this.injected.timeIntervalStore.timeIntervalList.forEach(
+      timeInterval => {
+        timeInterval.lessonCards.forEach(
+          lessonCard => {
+            if (lessonCard.audienceNumber && lessonCard.groupId && lessonCard.lecturerId) {
+              freeAudiences.delete(lessonCard.audienceNumber)
+            }
+          }
+        )
+      }
+    )
     return (
       <>
         <Grid container spacing={3} className={classes.root}>
@@ -229,7 +267,7 @@ class Timetable extends Component<IProps, IState> {
             {
               headerCardList.map((headerCardModel, headerCardIdx) => (
                 <Box component='span' key={headerCardIdx}>
-                  <Card className={classes.card && classes.headerCard} style={cardStyle}>
+                  <Card className={classes.card && (this.state.acquiredAudiences.includes(headerCardModel.audienceNumber)) ? classes.acquridHeaderCard : (freeAudiences.has(headerCardModel.audienceNumber)) ? classes.freeHeaderCard : classes.headerCard} style={cardStyle}>
                     <CardContent>
                       <Typography variant="h6" component="h3">
                         {headerCardModel.audienceNumber}
