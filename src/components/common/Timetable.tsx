@@ -8,7 +8,8 @@ import { LecturerStore } from '../../stores/LecturerStore'
 import { Grid, Card, CardContent, Typography, /* IconButton, CardActions, */ Button, Box, Dialog, DialogTitle, DialogActions, DialogContent, FormControl, InputLabel, MenuItem, Select/*, TextField */ } from '@material-ui/core'
 import dateTimeFormatter from 'date-and-time'
 import DigitalWatch from './timetable_parts/DigitalWatch'
-import TimeIntervalModel from '../../models/TimeIntervalModel'
+// import TimeIntervalModel from '../../models/TimeIntervalModel'
+import TimeIntervalProgress from './timetable_parts/TimeIntervalProgress'
 // import { ValidatorForm } from 'react-material-ui-form-validator'
 
 // type for the explicitly provided props only
@@ -149,7 +150,7 @@ class Timetable extends Component<IProps, IState> {
                 )
                 return (currentTimeDate >= currentIntervalStartDate) && (currentTimeDate <= currentIntervalEndDate)
             }
-          )!.id || null)
+          )?.id || null)
         /* dateTimeFormatter.parse(
           `${}:${}:00`, 'H:mm:ss'
         ) */
@@ -210,6 +211,8 @@ class Timetable extends Component<IProps, IState> {
     } = this.injected.timeIntervalStore
     const { groupList } = this.injected.groupStore
     const { lecturerList } = this.injected.lecturerStore
+    const timeIntervalProgressView =
+      this.injected.timeIntervalStore.currentTimeIntervalId ? <TimeIntervalProgress/> : ''
     return (
       <>
         <Grid container spacing={3} className={classes.root}>
@@ -358,6 +361,7 @@ class Timetable extends Component<IProps, IState> {
           </form>
         </Dialog>
         <DigitalWatch/>
+        {timeIntervalProgressView}
       </>
     )
   }
